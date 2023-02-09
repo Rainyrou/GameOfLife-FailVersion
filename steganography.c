@@ -46,8 +46,8 @@ Image *steganography(Image *image)
 		return NULL;
 	}
 	Color** tint=newimage->image;
-	for(int i=0;i<newimage->rows;++i){
-		for(int j=0;j<newimage->cols;++j){
+	for(int j=0;j<newimage->cols;++j){
+		for(int i=0;i<newimage->rows;++i){
 			*tint=evaluateOnePixel(image,i,j);
 			++tint;
 		}
