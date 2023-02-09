@@ -37,7 +37,8 @@ Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
 			if(y<0) y=image->cols-1;
 			if(y==image->cols) y=0;
 			if(!(x==row&&y==col)){
-				if(image->image[x][y].R==255&&image->image[x][y].G==255&&image->image[x][y].B==255) ++count;
+				Color* newpos=*(image->image+x*image->cols+y);
+				if(newpos->R==255&&newpos->G==255&&newpos->B==255) ++count;
 			}
 		}
 	}
