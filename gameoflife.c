@@ -23,6 +23,35 @@
 Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
 {
 	//YOUR CODE HERE
+	Color* newone=(Color*)malloc(sizeof(Color));
+	if(!newone) return NULL;
+	int count=0;
+	if(row<0||row>=image->rows||col<0||col>=image->cols) return NULL;
+	Color** cur=image->image;
+	cur+=(image->cols*row+col);
+	for(int i=row-1;i<=row+1;++i){
+		for(int j=col-1;j<=col+1;++j){
+			int x=i,y=j;
+			if(x<0) x=image->rows-1;
+			if(x==image->rows) x=0;
+			if(y<0) y=image->cols-1;
+			if(y==image->cols) y=0;
+			if(!(x==row&&y==col)){
+				if(image->image[x][y].R==255&&image->image[x][y].G==255&&image->image[x][y].B==255) ++count;
+			}
+		}
+	}
+	int rule1 = (rule & 0x1C) >> 2;
+	int rule2 = (rule & 0x3E0) >> 5;
+	if((*cur)->R==255&&(*cur)->G==255&&(*cur)->B==255){
+		if(count >= rule1 && count <= rule2)  newone->R=newone->G=newone->B=255;
+		else                                    newone->R=newone->G=newone->B=0;
+	}
+	else{
+		if(count == (rule & 0x1F))    newone->R=newone->G=newone->B=255;
+		else                          newone->R=newone->G=newone->B=0;
+	}
+	return newone;
 }
 
 //The main body of Life; given an image and a rule, computes one iteration of the Game of Life.
@@ -30,6 +59,23 @@ Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
 Image *life(Image *image, uint32_t rule)
 {
 	//YOUR CODE HERE
+	Image* newimage=(Image*)malloc(sizeof(Image));
+	if(!newimage) return NULL;
+	newimage->rows=image->rows;
+	newimage->cols=image->cols;
+	newimage->image=(Color**)malloc(sizeof(Color*)*newimage->rows*newimage->cols);
+	if(!newimage->image){
+		free(newimage);
+		return NULL;
+	}
+	Color** tint=newimage->image;
+	for(int i=0;i<newimage->cols;++i){
+		for(int j=0;j<newimage->rows;++j){
+			*tint=evaluateOneCell(image,i,j,rule);
+			++tint;
+		}
+	}
+	return newimage;
 }
 
 /*
@@ -50,4 +96,13 @@ You may find it useful to copy the code from steganography.c, to start.
 int main(int argc, char **argv)
 {
 	//YOUR CODE HERE
+	if(argc!=3) exit(-1);
+	Image* image=readData(argv[1]);
+	char* ptr=NULL;
+	uint32_t rule=strtol(argv[2],&ptr,16);
+	Image* newimage=life(image,rule);
+	writeData(newimage);
+	freeImage(image);
+	freeImage(newimage);
+	return 0;
 }

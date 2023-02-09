@@ -49,7 +49,7 @@ Image *steganography(Image *image)
 	for(int i=0;i<newimage->cols;++i){
 		for(int j=0;j<newimage->rows;++j){
 			*tint=evaluateOnePixel(image,i,j);
-			tint++;
+			++tint;
 		}
 	}
 	return newimage;
