@@ -22,12 +22,13 @@
 Color *evaluateOnePixel(Image *image, int row, int col)
 {
 	//YOUR CODE HERE
-	Color cur=image->image[row][col];
-	int mybit=cur.B &1;
+	if(row<0||row>=image->rows||col<0||col>=image->cols) return NULL;
+	Color** cur=image->image;
+	cur+=(image->cols*row+col);
+	int mybit=(*cur)->B &1;
 	Color* newone=(Color*)malloc(sizeof(Color));
 	if(!newone) return NULL;
-	if(mybit){newone->R=255;newone->G=255;newone->B=255;}
-	else     {newone->R=0;newone->G=0;newone->B=0;}
+	newone->B=newone->G=newone->R=mybit*255;
 	return newone;
 }
 
@@ -74,9 +75,7 @@ int main(int argc, char **argv)
 	Image* image=readData(argv[1]);
 	Image* newimage=steganography(image);
 	writeData(newimage);
-	free(image);
-	for(int i=0;i<newimage->rows*newimage->cols;i++) free(newimage->image[i]);
-	free(newimage->image);
-	free(newimage);
+	freeImage(image);
+	freeImage(newimage);
 	return 0;
 }
