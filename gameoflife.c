@@ -70,8 +70,8 @@ Image *life(Image *image, uint32_t rule)
 		return NULL;
 	}
 	Color** tint=newimage->image;
-	for(int i=0;i<newimage->cols;++i){
-		for(int j=0;j<newimage->rows;++j){
+	for(int i=0;i<newimage->rows;++i){
+		for(int j=0;j<newimage->cols;++j){
 			*tint=evaluateOneCell(image,i,j,rule);
 			++tint;
 		}
