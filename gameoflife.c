@@ -29,8 +29,8 @@ Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
 	if(row<0||row>=image->rows||col<0||col>=image->cols) return NULL;
 	Color** cur=image->image;
 	cur+=(image->cols*row+col);
-	for(int i=row-1;i<=row+1;++i){
-		for(int j=col-1;j<=col+1;++j){
+	for(int j=col-1;j<=col+1;++j){
+		for(int i=row-1;i<=row+1;++i){
 			int x=i,y=j;
 			if(x<0) x=image->rows-1;
 			if(x==image->rows) x=0;
@@ -42,14 +42,12 @@ Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
 			}
 		}
 	}
-	int rule1 = (rule & 0x1C) >> 2;
-	int rule2 = (rule & 0x3E0) >> 5;
 	if((*cur)->R==255&&(*cur)->G==255&&(*cur)->B==255){
-		if(count >= rule1 && count <= rule2)  newone->R=newone->G=newone->B=255;
+		if(count==2||count==3)                  newone->R=newone->G=newone->B=255;
 		else                                    newone->R=newone->G=newone->B=0;
 	}
 	else{
-		if(count == (rule & 0x1F))    newone->R=newone->G=newone->B=255;
+		if(count==3)                  newone->R=newone->G=newone->B=255;
 		else                          newone->R=newone->G=newone->B=0;
 	}
 	return newone;
