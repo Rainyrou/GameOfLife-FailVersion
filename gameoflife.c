@@ -37,7 +37,7 @@ Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
 	int Blive=(*(image->image+image->cols*row+col))->B==255;
 	for(int i=0;i<8;++i){
 		int x=circular(row+dx[i],image->rows);
-		int y=circular(row+dy[i],image->cols);
+		int y=circular(col+dy[i],image->cols);
 		if((*(image->image+image->cols*x+y))->R==255) LRN++;
 		if((*(image->image+image->cols*x+y))->G==255) LGN++;
 		if((*(image->image+image->cols*x+y))->B==255) LBN++;
@@ -77,7 +77,6 @@ Image *life(Image *image, uint32_t rule)
 
 /*
 Loads a .ppm from a file, computes the next iteration of the game of life, then prints to stdout the new image.
-
 argc stores the number of arguments.
 argv stores a list of arguments. Here is the expected input:
 argv[0] will store the name of the program (this happens automatically).
@@ -87,7 +86,6 @@ You may find the function strtol useful for this conversion.
 If the input is not correct, a malloc fails, or any other error occurs, you should exit with code -1.
 Otherwise, you should return from main with code 0.
 Make sure to free all memory before returning!
-
 You may find it useful to copy the code from steganography.c, to start.
 */
 int main(int argc, char **argv)
