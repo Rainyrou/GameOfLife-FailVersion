@@ -17,39 +17,37 @@
 #include <inttypes.h>
 #include "imageloader.h"
 
+int circular(int x,int y){
+	return (x+y)%y;
+}
+
 //Determines what color the cell at the given row/col should be. This function allocates space for a new Color.
 //Note that you will need to read the eight neighbors of the cell in question. The grid "wraps", so we treat the top row as adjacent to the bottom row
 //and the left column as adjacent to the right column.
 Color *evaluateOneCell(Image *image, int row, int col, uint32_t rule)
 {
 	//YOUR CODE HERE
+	int dx[8]={-1,-1,-1,0,0,1,1,1};
+	int dy[8]={-1,0,1,-1,1,-1,0,1};
 	Color* newone=(Color*)malloc(sizeof(Color));
 	if(!newone) return NULL;
-	int count=0;
-	if(row<0||row>=image->rows||col<0||col>=image->cols) return NULL;
-	Color** cur=image->image;
-	cur+=(image->cols*row+col);
-	for(int j=col-1;j<=col+1;++j){
-		for(int i=row-1;i<=row+1;++i){
-			int x=i,y=j;
-			if(x<0) x=image->rows-1;
-			if(x==image->rows) x=0;
-			if(y<0) y=image->cols-1;
-			if(y==image->cols) y=0;
-			if(!(x==row&&y==col)){
-				Color* newpos=*(image->image+x*image->cols+y);
-				if(newpos->R==255&&newpos->G==255&&newpos->B==255) ++count;
-			}
-		}
+	int LRN=0,LGN=0,LBN=0;
+	int Rlive=(*(image->image+image->cols*row+col))->R==255;
+	int Glive=(*(image->image+image->cols*row+col))->G==255;
+	int Blive=(*(image->image+image->cols*row+col))->B==255;
+	for(int i=0;i<8;++i){
+		int x=circular(row+dx[i],image->rows);
+		int y=circular(row+dy[i],image->cols);
+		if((*(image->image+image->cols*x+y))->R==255) LRN++;
+		if((*(image->image+image->cols*x+y))->G==255) LGN++;
+		if((*(image->image+image->cols*x+y))->B==255) LBN++;
 	}
-	if((*cur)->R==255&&(*cur)->G==255&&(*cur)->B==255){
-		if(count==2||count==3)                  newone->R=newone->G=newone->B=255;
-		else                                    newone->R=newone->G=newone->B=0;
-	}
-	else{
-		if(count==3)                  newone->R=newone->G=newone->B=255;
-		else                          newone->R=newone->G=newone->B=0;
-	}
+	int codeR=9*Rlive+LRN;
+	int codeG=9*Glive+LGN;
+	int codeB=9*Blive+LBN;
+	newone->R=(rule&(1<<codeR))?255:0;
+	newone->G=(rule&(1<<codeG))?255:0;
+	newone->B=(rule&(1<<codeB))?255:0;
 	return newone;
 }
 
@@ -68,8 +66,8 @@ Image *life(Image *image, uint32_t rule)
 		return NULL;
 	}
 	Color** tint=newimage->image;
-	for(int j=0;j<newimage->cols;++j){
-		for(int i=0;i<newimage->rows;++i){
+	for(int i=0;i<newimage->rows;++i){
+		for(int j=0;j<newimage->cols;++j){
 			*tint=evaluateOneCell(image,i,j,rule);
 			++tint;
 		}

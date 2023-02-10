@@ -34,7 +34,7 @@ Image *readData(char *filename)
 		fclose(fp);
 		return NULL;
 	}
-	fscanf(fp,"%s%u%u%d",format,&line->rows,&line->cols,&scale);
+	fscanf(fp,"%s%u%u%d",format,&line->cols,&line->rows,&scale);
 	line->image=(Color**)malloc(sizeof(Color*)*line->rows*line->cols);
 	if(!line->image){
 		fclose(fp);
@@ -60,10 +60,10 @@ Image *readData(char *filename)
 void writeData(Image *image)
 {
 	//YOUR CODE HERE
-	printf("%s\n%d %d\n255\n","P3",image->rows,image->cols);
+	printf("%s\n%d %d\n255\n","P3",image->cols,image->rows);
 	Color** tint=image->image;
-	for(int i=0;i<image->cols;++i){
-		for(int j=0;j<image->rows-1;++j){
+	for(int i=0;i<image->rows;++i){
+		for(int j=0;j<image->cols-1;++j){
 			printf("%3hhu %3hhu %3hhu   ",(*tint)->R,(*tint)->G,(*tint)->B);
 			tint++;
 		}
